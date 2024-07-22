@@ -1,0 +1,71 @@
+---
+title: "Bike Trip"
+author: "Me"
+date: "2024-07-09"
+output: html_document
+---
+Cyclistic is a bike-sharing operation located in Chicago. Cyclistic would like to convert casual riders into annual members. Our goal for this analysis is to answer the question: How do annual member and casual riders use Cyclistic bikes differently.  
+
+Our data consists of rider data from a bike sharing service for the first quarters of the years 2019 and 2020. The data has been made available by Motivate International Inc. under this [liscense](https://divvybikes.com/data-license-agreement).  
+
+## Exploratory Analysis in Sheets
+  
+  * Created trip length and day of the week columns
+  * Cleaned up column names to make naming consistent between the two data     sets
+  * Data initially consisted of 14 columns for the 2019 data and 15 columns     for the 2020 data. After removing superfluous columns, both data sets
+    have 10 columns.
+  * Changed Customer under user_type in 2019 data to casual and Subscriber     to member.
+  
+## Beginning R Analysis
+
+```{r Packages}
+library(tidyverse)
+library(skimr)
+library(janitor)
+```
+
+```{r Importing Data}
+bike_data_2019 <- read.csv('bike_data_2019_Q1.csv')
+bike_data_2020 <- read.csv('bike_data_2020_Q1.csv')
+```
+
+Let's start by combining our two data sets into a single data frame and converting the trip_length data to numeric data type.
+
+```{r Aggregating Data}
+df_bike_data <- merge(x = bike_data_2019, y = bike_data_2020, all = TRUE)
+
+df_bike_data[["trip_length"]] <- as.duration(hms(df_bike_data[["trip_length"]]))
+```
+
+Our data contains a number of rides of negligible length and other rides of several weeks. We will remove these outliers to get a more accurate picture of the average user.
+
+```{r Removing Outliers}
+df_trimmed <- df_bike_data %>%
+  filter(trip_length >60 & trip_length < (12*3600))
+```
+
+To start our analysis let's calculate the average trip length for members and casual riders measured in minutes.
+
+```{r}
+df_trimmed %>%
+  group_by(user_type) %>%
+  summarise(mean = mean(as.numeric(trip_length)/60))
+```
+
+As we can see, casual riders are on average taking much longer rides than members. Let's continue by finding the mean for each day of the week.
+
+```{r}
+df_trimmed %>%
+  group_by(day_of_week, user_type) %>%
+  summarise(mean = mean(as.numeric(trip_length)/60))
+```
+
+Here our day runs from 1 (Sunday) through 7 (Saturday).The average trip length does not vary greatly by day of the week. Let's obtain the number of riders by day of the week.
+
+```{r}
+df_trimmed %>%
+  group_by(day_of_week, user_type) %>%
+  summarise(riders = n())
+```
+
+Here we can see that while casual riders are riding more on the weekends, members are riding much more during the week.
