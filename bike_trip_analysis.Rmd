@@ -69,3 +69,10 @@ df_trimmed %>%
 ```
 
 Here we can see that while casual riders are riding more on the weekends, members are riding much more during the week.
+
+
+## Conclusions
+
+Our analysis showed that members on average take much shorter rides than casual riders and do so during the work week. We conclude that members are using bikes as their day-to-day transportation. Casual riders could be persuaded to become members if they too can see the utility of using the service for day-to-day transport. 
+
+The shorter ride length of members is also interesting. Casual riders could be persuaded to become members if they can be shown the utility of using the service for short trips, perhaps by showing how quick it is to rent and return a bike as a member.
